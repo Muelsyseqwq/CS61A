@@ -1,6 +1,6 @@
 body{
     margin: 0;
-    background-image: url('../static/assets/splash.png');
+    background-image: url('/static/assets/splash.png');
     background-repeat: no-repeat;
     background-size: cover;
     background-color: rgba(11, 32, 98, 0.2);
@@ -43,7 +43,7 @@ body{
 
 .game-window{
     border-style: none;
-    background-image: url('../static/assets/background.png');
+    background-image: url('/static/assets/background.png');
     background-repeat: no-repeat;
     background-size: cover;
     display: grid;

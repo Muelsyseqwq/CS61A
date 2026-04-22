@@ -6,7 +6,7 @@ function formatAntButtons(antTypes) {
         let antButton = document.createElement('button');
         antButton.setAttribute('class', `ant-btn`);
         antButton.setAttribute('id', antTypes[i]);
-        antButton.style.backgroundImage = `url('../static/assets/ants/${antTypes[i]}.gif')`;
+        antButton.style.backgroundImage = `url('/static/assets/ants/${antTypes[i]}.gif')`;
         antSection.appendChild(antButton);
         selectedAntsTable[antTypes[i]] = false; // Add key value pairs to table (key = ant name, val = whether it's selected)
     }
@@ -65,11 +65,11 @@ function createButtonsForRow(buttonCount, row, wetPlaces) {
         button.setAttribute('class', `tile-btn`);
         button.setAttribute('id', `${row}-${i}`);
         let image = document.createElement('img');
-        image.setAttribute('src', `../static/assets/tiles/${i % 3}.png`);
+        image.setAttribute('src', `/static/assets/tiles/${i % 3}.png`);
 
         for (let j = 0; j < wetPlaces.length; j++) { // Check every wet place to see if is current place
             if (wetPlaces[j][0] === row && wetPlaces[j][1] === i) {
-                image.setAttribute('src', `../static/assets/tiles/wet.png`); // Set src as wet place
+                image.setAttribute('src', `/static/assets/tiles/wet.png`); // Set src as wet place
                 break;
             }
         }
@@ -87,7 +87,7 @@ function formatHive() {
     hive.style.position = 'relative';
     hive.style.overflow = 'hidden';
     image = document.createElement('img');
-    image.setAttribute('src', `../static/assets/BeeHive.png`);
+    image.setAttribute('src', `/static/assets/BeeHive.png`);
     image.style.width = '100%';
     image.style.height = '100%';
     image.style.objectFit = 'contain';
@@ -203,7 +203,7 @@ function placeAnt(antName, place, ant_id) {
     } else {
         image.setAttribute('class', 'insect-on-tile-img');
     }
-    image.setAttribute('src', `../static/assets/ants/${antName}.gif`);
+    image.setAttribute('src', `/static/assets/ants/${antName}.gif`);
     image.setAttribute('id', ant_id);
     button.appendChild(image);
 

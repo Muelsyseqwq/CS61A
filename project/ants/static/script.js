@@ -104,27 +104,40 @@ function moveBeeFromHive(data) {
     setTimeout(() => {
         let beeImg = document.createElement('img');
         let destination = document.getElementById(`${data.destination[0]}-${data.destination[1]}`);
-        destination.appendChild(beeImg);
         beeImg.setAttribute('class', 'insect-on-tile-img');
         beeImg.setAttribute('id', data.bee_id);
-        beeImg.setAttribute('src', `../static/assets/bees/${data.bee_name}.gif`)
+        beeImg.setAttribute('src', `/static/assets/bees/${data.bee_name}.gif`);
         beeImg.style.zIndex = '5'; // Set bee image on top of tile image
 
-        let offset = destination.getBoundingClientRect().right - beeImg.getBoundingClientRect().right;
-        beeImg.style.transition = `transform ${moveBeeAnimationDuration}s ease-in-out`;
-        beeImg.style.top = `${(destination.offsetHeight - beeImg.offsetHeight) / 2}px`;
+        // Add to DOM immediately so health bar creation can find this element
+        destination.appendChild(beeImg);
 
-        setTimeout(() => {
-            beeImg.style.transform = `translateX(${offset}px)`;
+        // Wait for image to load before calculating positions and starting animation
+        function startBeeAnimation() {
+            let offset = destination.getBoundingClientRect().right - beeImg.getBoundingClientRect().right;
+            beeImg.style.transition = `transform ${moveBeeAnimationDuration}s ease-in-out`;
             beeImg.style.top = `${(destination.offsetHeight - beeImg.offsetHeight) / 2}px`;
-        }, animationDelay);
 
+            setTimeout(() => {
+                beeImg.style.transform = `translateX(${offset}px)`;
+                beeImg.style.top = `${(destination.offsetHeight - beeImg.offsetHeight) / 2}px`;
+            }, animationDelay);
 
-        setTimeout(() => { // Append to new parent, reset translate
-            beeImg.style.transition = '';
-            beeImg.style.transform = `translateX(0px)`;
-            beeImg.style.left = `0px`;
-        }, moveBeeAnimationDuration * 1000 + animationDelay * 2);
+            setTimeout(() => { // Append to new parent, reset translate
+                beeImg.style.transition = '';
+                beeImg.style.transform = `translateX(0px)`;
+                beeImg.style.left = `0px`;
+            }, moveBeeAnimationDuration * 1000 + animationDelay * 2);
+        }
+
+        if (beeImg.complete && beeImg.naturalWidth > 0) {
+            startBeeAnimation();
+        } else {
+            beeImg.onload = startBeeAnimation;
+            beeImg.onerror = function() {
+                console.error('Failed to load bee image:', data.bee_name);
+            };
+        }
 
     }, animationDelay * 2);
 }
@@ -389,25 +402,38 @@ function throwAt(data) {
     let distance = target.getBoundingClientRect().left - thrower.getBoundingClientRect().right;
     let offset = thrower.getBoundingClientRect().left - thrower.getBoundingClientRect().right;
     let leafImg = document.createElement('img');
-    let animationDelay = 25 // milliseonds
+    let animationDelay = 25; // milliseconds
 
-    thrower.appendChild(leafImg);
-    leafImg.setAttribute('src', '../static/assets/testLeaf.png');
+    leafImg.setAttribute('src', '/static/assets/testLeaf.png');
     leafImg.setAttribute('class', 'leaf-on-tile-img');
 
-    leafImg.style.transform = `translateX(${offset}px)`;
-    leafImg.style.transition = `transform ${throwLeafAnimationDuration}s ease-in`;
-    leafImg.style.top = `${(target.offsetHeight - leafImg.offsetHeight) / 2}px`;
-    setTimeout(() => {
-        playSoundEffect('leafthrow');
-        leafImg.style.transform = `translateX(${distance}px)`;
+    // Wait for image to load before adding to DOM and starting animation
+    function startLeafAnimation() {
+        thrower.appendChild(leafImg);
+
+        leafImg.style.transform = `translateX(${offset}px)`;
+        leafImg.style.transition = `transform ${throwLeafAnimationDuration}s ease-in`;
         leafImg.style.top = `${(target.offsetHeight - leafImg.offsetHeight) / 2}px`;
-    }, animationDelay);
 
-    setTimeout(() => {
-        leafImg.remove();
-    }, animationDelay * 2 + throwLeafAnimationDuration * 1000);
+        setTimeout(() => {
+            playSoundEffect('leafthrow');
+            leafImg.style.transform = `translateX(${distance}px)`;
+            leafImg.style.top = `${(target.offsetHeight - leafImg.offsetHeight) / 2}px`;
+        }, animationDelay);
 
+        setTimeout(() => {
+            leafImg.remove();
+        }, animationDelay * 2 + throwLeafAnimationDuration * 1000);
+    }
+
+    if (leafImg.complete && leafImg.naturalWidth > 0) {
+        startLeafAnimation();
+    } else {
+        leafImg.onload = startLeafAnimation;
+        leafImg.onerror = function() {
+            console.error('Failed to load leaf image');
+        };
+    }
 }
 
 
