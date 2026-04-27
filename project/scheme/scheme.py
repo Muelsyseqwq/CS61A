@@ -27,6 +27,8 @@ def read_eval_print_loop(next_line, env, interactive=False, quiet=False,
             src = next_line()
             while src.more_on_line():
                 expression = scheme_read(src)
+                # print(f"DEBUG:{Link.__repr__(expression)}")
+                # print(f"DEBUG:{expression}")
                 result = scheme_eval(expression, env)
                 if not quiet and result is not None:
                     print(repl_str(result))

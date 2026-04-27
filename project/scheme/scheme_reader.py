@@ -47,7 +47,7 @@ def scheme_read(src):
         if src.current() == ".":
             raise SyntaxError(". cannot be the first token in a list")
         # second argument shouldn't be in student solution
-        return read_tail(src)
+        return read_tail(src) #
     elif val in quotes:
         return Link(quotes[val], Link(scheme_read(src), nil))
     elif val not in DELIMITERS:
@@ -70,7 +70,7 @@ def read_tail(src):
             src.pop_first()
             return nil
         else:
-            first = scheme_read(src)
+            first = scheme_read(src) # (define x (+ 1 2) 为什么会有嵌套的Link? 这里当以 ( 再次进入后 会在scheme_read()中调用read_tail 返回一个link, 这是first,之后又会遇到 )返回nil 这两个又构成一个list
             rest = read_tail(src)
             return Link(first, rest)
     except EOFError:

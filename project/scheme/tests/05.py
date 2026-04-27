@@ -5,7 +5,7 @@ test = {
     {
       'cases': [
         {
-          'answer': 'b4aa547bac1b887dfd7387940e9b4a0a',
+          'answer': 'Link(A, nil), where: A is the quoted expression',
           'choices': [
             r"""
             Link('quote', Link(A, nil)), where:
@@ -25,7 +25,7 @@ test = {
             """
           ],
           'hidden': False,
-          'locked': True,
+          'locked': False,
           'multiline': False,
           'question': 'What is the structure of the expressions argument to do_quote_form?'
         }
@@ -38,18 +38,15 @@ test = {
         {
           'code': r"""
           >>> do_quote_form(Link(3, nil), global_frame)
-          71373a588b7d2da6b021a6a9cb2a416f
-          # locked
+          3
           >>> do_quote_form(Link('hi', nil), global_frame)
-          7416b5e74e5b93f7c641ed723332329a
-          # locked
+          'hi'
           >>> expr = Link(Link('+', Link('x', Link(2))))
           >>> do_quote_form(expr, global_frame) # Make sure to use Link notation
-          794b71f6db0ce00c40ebf39e9ca9b174
-          # locked
+          Link('+', Link('x', Link(2)))
           """,
           'hidden': False,
-          'locked': True,
+          'locked': False,
           'multiline': False
         }
       ],

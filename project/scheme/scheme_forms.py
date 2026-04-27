@@ -37,11 +37,24 @@ def do_define_form(expressions, env):
         validate_form(expressions, 2, 2) # Checks that expressions is a list of length exactly 2
         # BEGIN PROBLEM 4
         "*** YOUR CODE HERE ***"
+        # print(f"DEBUG:{type(expressions.rest.first)}")
+        value = scheme_eval(expressions.rest.first, env)
+        env.define(signature, value)
+        return signature
         # END PROBLEM 4
     elif isinstance(signature, Link) and scheme_symbolp(signature.first):
         # defining a named procedure e.g. (define (f x y) (+ x y))
         # BEGIN PROBLEM 10
         "*** YOUR CODE HERE ***"
+        # print(f"DEBUG:{signature.first}")
+        # print(f"DEBUG:{signature.rest}")
+        # print(f"DEBUG:{expressions.rest.first}")
+        body = expressions.rest
+        formals = signature.rest
+        validate_formals(formals)
+        Lam = LambdaProcedure(formals,body,env)
+        env.define(signature.first, Lam)
+        return signature.first
         # END PROBLEM 10
     else:
         bad_signature = signature.first if isinstance(signature, Link) else signature
@@ -57,6 +70,7 @@ def do_quote_form(expressions, env):
     validate_form(expressions, 1, 1)
     # BEGIN PROBLEM 5
     "*** YOUR CODE HERE ***"
+    return expressions.first
     # END PROBLEM 5
 
 def do_begin_form(expressions, env):
@@ -83,6 +97,8 @@ def do_lambda_form(expressions, env):
     validate_formals(formals)
     # BEGIN PROBLEM 7
     "*** YOUR CODE HERE ***"
+    body = expressions.rest
+    return LambdaProcedure(formals, body,env)
     # END PROBLEM 7
 
 def do_if_form(expressions, env):
@@ -96,9 +112,9 @@ def do_if_form(expressions, env):
     """
     validate_form(expressions, 2, 3)
     if is_scheme_true(scheme_eval(expressions.first, env)):
-        return scheme_eval(expressions.rest.first, env)
+        return scheme_eval(expressions.rest.first, env,True)
     elif len_link(expressions) == 3:
-        return scheme_eval(expressions.rest.rest.first, env)
+        return scheme_eval(expressions.rest.rest.first, env,True)
 
 def do_and_form(expressions, env):
     """Evaluate a (short-circuited) and form.
@@ -116,6 +132,18 @@ def do_and_form(expressions, env):
     """
     # BEGIN PROBLEM 12
     "*** YOUR CODE HERE ***"
+    mx = 0
+    if expressions is Link.empty:
+        return True
+    while expressions.rest is not Link.empty:
+        mx = scheme_eval(expressions.first, env)
+        if is_scheme_false(mx):
+            return mx
+        expressions = expressions.rest
+
+    return scheme_eval(expressions.first, env,True)
+
+
     # END PROBLEM 12
 
 def do_or_form(expressions, env):
@@ -134,6 +162,14 @@ def do_or_form(expressions, env):
     """
     # BEGIN PROBLEM 12
     "*** YOUR CODE HERE ***"
+    while expressions.rest is not Link.empty:
+        mx = scheme_eval(expressions.first, env)
+        if is_scheme_true(mx):
+            return mx
+        expressions = expressions.rest
+
+    return scheme_eval(expressions.first, env,True)
+
     # END PROBLEM 12
 
 def do_cond_form(expressions, env):
@@ -154,7 +190,10 @@ def do_cond_form(expressions, env):
         if is_scheme_true(test):
             # BEGIN PROBLEM 13
             "*** YOUR CODE HERE ***"
+            if clause.rest is not Link.empty:
+                return eval_all(clause.rest, env)
             # END PROBLEM 13
+            return test
         expressions = expressions.rest
 
 def do_let_form(expressions, env):
@@ -178,7 +217,24 @@ def make_let_frame(bindings, env):
     names = vals = nil
     # BEGIN OPTIONAL PROBLEM 1
     "*** YOUR CODE HERE ***"
+    name = []
+    val = []
+    # print(f"DEBUG{bindings}")
+    while bindings is not nil:
+        # print(f"DEBUG{bindings.first}")
+        validate_form(bindings.first, 2, 2)
+        name.append(bindings.first.first)
+        val_now = scheme_eval(bindings.first.rest.first, env)
+        val.append(val_now)
+        bindings = bindings.rest
+
+    # print(f"DEBUG:{name},{val}")
     # END OPTIONAL PROBLEM 1
+    for n,v in zip(reversed(name), reversed(val)):
+        names = Link(n,names)
+        vals = Link(v,vals)
+    # print(f"DEBUG:{names},{vals}")
+    validate_formals(names)
     return env.make_child_frame(names, vals)
 
 
@@ -220,6 +276,8 @@ def do_mu_form(expressions, env):
     validate_formals(formals)
     # BEGIN PROBLEM 11
     "*** YOUR CODE HERE ***"
+    body = expressions.rest.first
+    return MuProcedure(formals, body)
     # END PROBLEM 11
 
 
